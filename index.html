@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LogoCraft Studio</title>
+
+    <link
+      href="https://fonts.googleapis.com/css?family=Bangers|Cinzel:400,700,900|Lato:100,300,400,700,900|Lobster|Lora:400,700|Mansalva|Muli:200,300,400,600,700,800,900|Open+Sans:300,400,600,700,800|Oswald:200,300,400,500,600,700|Roboto:100,300,400,500,700,900|Playfair+Display:400,700|Montserrat:300,800|Dancing+Script|Abril+Fatface&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Crect width='60' height='60' rx='8' fill='hsl(222.2 47.4%25 11.2%25)'/%3E%3Cpath d='M15 20h30M15 30h30M15 40h30' stroke='hsl(210 40%25 98%25)' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='30' cy='30' r='15' stroke='hsl(210 40%25 98%25)' stroke-width='4' fill='none'/%3E%3Cpath d='M25 25l10 10M35 25l-10 10' stroke='hsl(210 40%25 98%25)' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --background: 0 0% 100%;
+        --foreground: 222.2 84% 4.9%;
+        --card: 0 0% 100%;
+        --card-foreground: 222.2 84% 4.9%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 222.2 84% 4.9%;
+        --primary: 222.2 47.4% 11.2%;
+        --primary-foreground: 210 40% 98%;
+        --secondary: 210 40% 96.1%;
+        --secondary-foreground: 222.2 47.4% 11.2%;
+        --muted: 210 40% 96.1%;
+        --muted-foreground: 215.4 16.3% 46.9%;
+        --accent: 210 40% 96.1%;
+        --accent-foreground: 222.2 47.4% 11.2%;
+        --destructive: 0 84.2% 60.2%;
+        --destructive-foreground: 210 40% 98%;
+        --border: 214.3 31.8% 91.4%;
+        --input: 214.3 31.8% 91.4%;
+        --ring: 222.2 84% 4.9%;
+        --radius: 0.5rem;
+        --logo-spacing: 0.5rem;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", sans-serif;
+        background-color: hsl(var(--background));
+        color: hsl(var(--foreground));
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2rem 2rem 0 2rem;
+      }
+
+      .logo-container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .input-container {
+        text-align: center;
+        margin-bottom: 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+      }
+
+      .input-group {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+        width: 100%;
+        max-width: 1000px;
+      }
+
+      .input-row {
+        display: flex;
+        gap: 1rem;
+        width: 100%;
+        max-width: 1000px;
+      }
+
+      .input-row .input-group {
+        flex: 1;
+      }
+
+      .input-group label {
+        font-size: 0.875rem;
+        color: hsl(var(--foreground));
+        font-weight: 500;
+      }
+
+      .input-container input {
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+        border: 1px solid hsl(var(--input));
+        border-radius: var(--radius);
+        width: 100%;
+        background-color: transparent;
+        color: hsl(var(--foreground));
+        transition: border-color 0.2s;
+      }
+
+      .input-container input[type="color"] {
+        padding: 0.4rem;
+        height: 45px;
+        cursor: pointer;
+      }
+
+      .input-container input[type="range"] {
+        padding: 0;
+      }
+
+      .input-container input:focus {
+        outline: none;
+        border-color: hsl(var(--ring));
+        box-shadow: 0 0 0 2px hsl(var(--ring) / 0.1);
+      }
+
+      .logo-container ul {
+        list-style: none;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+        padding: 0;
+      }
+
+      .logo-holder {
+        padding: 2rem;
+        border-radius: var(--radius);
+        border: 1px solid hsl(var(--border));
+        text-align: center;
+        transition: all 0.2s ease;
+        position: relative;
+        cursor: pointer;
+        width: 300px;
+        height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .logo-holder:hover {
+        transform: translateY(-2px);
+      }
+
+      .logo-holder:hover .download-icon {
+        opacity: 1;
+      }
+
+      .logo-holder:hover a {
+        filter: blur(2px) brightness(1.5);
+        opacity: 0.1;
+      }
+
+      .download-icon {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        opacity: 0;
+        transition: opacity 0.2s;
+        z-index: 1;
+        color: hsl(var(--foreground));
+        font-size: 1rem;
+        font-weight: 500;
+      }
+
+      .download-icon::before {
+        content: "";
+        width: 20px;
+        height: 20px;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4'/%3E%3Cpolyline points='7 10 12 15 17 10'/%3E%3Cline x1='12' y1='15' x2='12' y2='3'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+      }
+
+      .download-icon::after {
+        content: "Download";
+      }
+
+      .logo-holder a {
+        text-decoration: none;
+        color: inherit;
+        position: relative;
+        z-index: 2;
+        transition: filter 0.2s ease;
+        width: 100%;
+      }
+
+      .logo-holder h3 {
+        font-size: 2rem;
+        margin-bottom: var(--logo-spacing);
+        color: hsl(var(--primary));
+      }
+
+      .logo-holder p {
+        font-size: 0.875rem;
+        color: hsl(var(--muted-foreground));
+      }
+
+      .logo-1 h3 {
+        font-family: "Oswald", sans-serif;
+        font-weight: 300;
+      }
+
+      .logo-2 h3 {
+        font-family: "Bangers", cursive;
+        letter-spacing: 2px;
+      }
+
+      .logo-3 h3 {
+        font-family: "Lobster", cursive;
+      }
+
+      .logo-4 h3 {
+        font-family: "Cinzel", serif;
+      }
+
+      .logo-5 h3 {
+        font-family: "Muli", sans-serif;
+        font-weight: 800;
+      }
+
+      .logo-6 h3 {
+        font-family: "Playfair Display", serif;
+        font-weight: 700;
+        font-style: italic;
+      }
+
+      .logo-7 h3 {
+        font-family: "Montserrat", sans-serif;
+        font-weight: 800;
+        letter-spacing: -1px;
+      }
+
+      .logo-8 h3 {
+        font-family: "Dancing Script", cursive;
+        font-size: 2.5rem;
+      }
+
+      .logo-9 h3 {
+        font-family: "Abril Fatface", cursive;
+        letter-spacing: 1px;
+      }
+
+      @media (max-width: 992px) {
+        .logo-container ul {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .logo-holder {
+          width: 100%;
+          height: 180px;
+        }
+        .input-row {
+          flex-direction: column;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .logo-container ul {
+          grid-template-columns: 1fr;
+        }
+
+        .logo-holder {
+          padding: 1.5rem;
+          height: 160px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="logo-container">
+      <header
+        style="
+          background-color: hsl(var(--card));
+          color: hsl(var(--card-foreground));
+          padding: 2.5rem;
+          text-align: center;
+          margin-bottom: 2rem;
+          border-radius: var(--radius);
+          border: 1px solid hsl(var(--border));
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 0.75rem;
+          margin: 1.5rem 0;
+          width: 100%;
+        "
+      >
+        <svg
+          width="48"
+          height="48"
+          viewBox="0 0 60 60"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <rect width="60" height="60" rx="8" fill="hsl(var(--primary))" />
+          <path
+            d="M15 20h30M15 30h30M15 40h30"
+            stroke="hsl(var(--primary-foreground))"
+            stroke-width="4"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+          <circle
+            cx="30"
+            cy="30"
+            r="15"
+            stroke="hsl(var(--primary-foreground))"
+            stroke-width="4"
+            fill="none"
+          />
+          <path
+            d="M25 25l10 10M35 25l-10 10"
+            stroke="hsl(var(--primary-foreground))"
+            stroke-width="4"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+        <h1 style="font-size: 2rem; font-weight: 700; margin: 0">
+          LogoCraft Studio
+        </h1>
+        <p
+          style="
+            font-size: 0.875rem;
+            color: hsl(var(--muted-foreground));
+            max-width: 600px;
+            margin-top: 0.5rem;
+          "
+        >
+          Create simple logos by customizing text, description, color, spacing
+          between elements and download as SVG.
+        </p>
+      </header>
+      <div class="input-container">
+        <div class="input-row">
+          <div class="input-group">
+            <label for="companyName">Name</label>
+            <small>Enter your company or product name</small>
+            <input
+              type="text"
+              id="companyName"
+              placeholder="Enter your company/product name"
+              oninput="updateLogos()"
+            />
+          </div>
+          <div class="input-group">
+            <label for="description">Tagline</label>
+            <small>A short description or slogan</small>
+            <input
+              type="text"
+              id="description"
+              placeholder="Enter a description or tagline"
+              oninput="updateLogos()"
+            />
+          </div>
+        </div>
+        <div class="input-row">
+          <div class="input-group">
+            <label for="bgColor">Color</label>
+            <small>Choose background color</small>
+            <input
+              type="color"
+              id="bgColor"
+              value="#ffffff"
+              oninput="updateBgColor()"
+            />
+          </div>
+          <div class="input-group">
+            <label for="spacing">Spacing</label>
+            <small>Adjust space between title and description</small>
+            <input
+              type="range"
+              id="spacing"
+              min="0"
+              max="2"
+              step="0.1"
+              value="0.5"
+              oninput="updateSpacing()"
+            />
+          </div>
+        </div>
+      </div>
+      <ul>
+        <li>
+          <div class="logo-holder logo-1" onclick="downloadLogo(1)">
+            <div class="download-icon"></div>
+            <a href="#">
+              <h3 id="logo1">MODERN</h3>
+              <p id="desc1">DESIGN STUDIO</p>
+            </a>
+          </div>
+        </li>
+        <li>
+          <div class="logo-holder logo-2" onclick="downloadLogo(2)">
+            <div class="download-icon"></div>
+            <a href="#">
+              <h3 id="logo2">CREATIVE</h3>
+              <p id="desc2">digital agency</p>
+            </a>
+          </div>
+        </li>
+        <li>
+          <div class="logo-holder logo-3" onclick="downloadLogo(3)">
+            <div class="download-icon"></div>
+            <a href="#">
+              <h3 id="logo3">Artisan</h3>
+              <p id="desc3">handcrafted designs</p>
+            </a>
+          </div>
+        </li>
+        <li>
+          <div class="logo-holder logo-4" onclick="downloadLogo(4)">
+            <div class="download-icon"></div>
+            <a href="#">
+              <h3 id="logo4">ELEGANT</h3>
+              <p id="desc4">luxury brand</p>
+            </a>
+          </div>
+        </li>
+        <li>
+          <div class="logo-holder logo-5" onclick="downloadLogo(5)">
+            <div class="download-icon"></div>
+            <a href="#">
+              <h3 id="logo5">MINIMAL</h3>
+              <p id="desc5">clean & simple</p>
+            </a>
+          </div>
+        </li>
+        <li>
+          <div class="logo-holder logo-6" onclick="downloadLogo(6)">
+            <div class="download-icon"></div>
+            <a href="#">
+              <h3 id="logo6">CLASSIC</h3>
+              <p id="desc6">timeless elegance</p>
+            </a>
+          </div>
+        </li>
+        <li>
+          <div class="logo-holder logo-7" onclick="downloadLogo(7)">
+            <div class="download-icon"></div>
+            <a href="#">
+              <h3 id="logo7">BOLD</h3>
+              <p id="desc7">make a statement</p>
+            </a>
+          </div>
+        </li>
+        <li>
+          <div class="logo-holder logo-8" onclick="downloadLogo(8)">
+            <div class="download-icon"></div>
+            <a href="#">
+              <h3 id="logo8">Signature</h3>
+              <p id="desc8">personal touch</p>
+            </a>
+          </div>
+        </li>
+        <li>
+          <div class="logo-holder logo-9" onclick="downloadLogo(9)">
+            <div class="download-icon"></div>
+            <a href="#">
+              <h3 id="logo9">PREMIUM</h3>
+              <p id="desc9">exclusive quality</p>
+            </a>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <script>
+      // Load saved values from cookies on page load
+      window.onload = function () {
+        const savedCompanyName = getCookie("companyName") || "";
+        const savedDescription = getCookie("description") || "";
+        const savedBgColor = getCookie("bgColor") || "#ffffff";
+        const savedSpacing = getCookie("spacing") || "0.5";
+
+        document.getElementById("companyName").value = savedCompanyName;
+        document.getElementById("description").value = savedDescription;
+        document.getElementById("bgColor").value = savedBgColor;
+        document.getElementById("spacing").value = savedSpacing;
+
+        // Apply saved values
+        if (savedCompanyName || savedDescription) updateLogos();
+        if (savedBgColor) updateBgColor();
+        if (savedSpacing) updateSpacing();
+      };
+
+      function updateLogos() {
+        const companyName = document.getElementById("companyName").value.trim();
+        const description = document.getElementById("description").value.trim();
+
+        // Save to cookies
+        setCookie("companyName", companyName, 30);
+        setCookie("description", description, 30);
+
+        for (let i = 1; i <= 9; i++) {
+          const logo = document.getElementById(`logo${i}`);
+          const desc = document.getElementById(`desc${i}`);
+
+          if (companyName) {
+            logo.textContent = companyName.toUpperCase();
+          }
+          if (description) {
+            desc.textContent = description;
+          }
+        }
+      }
+
+      function updateBgColor() {
+        const color = document.getElementById("bgColor").value;
+        // Save to cookie
+        setCookie("bgColor", color, 30);
+
+        const logoHolders = document.querySelectorAll(".logo-holder");
+        logoHolders.forEach((holder) => {
+          holder.style.backgroundColor = color;
+        });
+      }
+
+      function updateSpacing() {
+        const spacing = document.getElementById("spacing").value;
+        // Save to cookie
+        setCookie("spacing", spacing, 30);
+
+        document.documentElement.style.setProperty(
+          "--logo-spacing",
+          `${spacing}rem`
+        );
+      }
+
+      function setCookie(name, value, days) {
+        const expires = new Date();
+        expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
+        document.cookie =
+          name + "=" + value + ";expires=" + expires.toUTCString() + ";path=/";
+      }
+
+      function getCookie(name) {
+        const nameEQ = name + "=";
+        const ca = document.cookie.split(";");
+        for (let i = 0; i < ca.length; i++) {
+          let c = ca[i];
+          while (c.charAt(0) === " ") c = c.substring(1, c.length);
+          if (c.indexOf(nameEQ) === 0)
+            return c.substring(nameEQ.length, c.length);
+        }
+        return null;
+      }
+
+      function downloadLogo(index) {
+        const logoHolder = document.querySelector(`.logo-${index}`);
+        const logoText = document.getElementById(`logo${index}`).textContent;
+        const descText = document.getElementById(`desc${index}`).textContent;
+        const bgColor = document.getElementById("bgColor").value;
+        const spacing = document.getElementById("spacing").value;
+
+        const svgContent = `
+          <svg width="300" height="200" xmlns="http://www.w3.org/2000/svg">
+            <style>
+              @import url('https://fonts.googleapis.com/css?family=${getLogoFont(
+                index
+              )}');
+              .logo-text { ${getLogoStyle(index)} }
+              .desc-text { font-family: sans-serif; font-size: 14px; fill: #666; }
+            </style>
+            <rect width="100%" height="100%" fill="${bgColor}"/>
+            <text x="50%" y="${
+              45 - spacing * 10
+            }%" text-anchor="middle" class="logo-text">${logoText}</text>
+            <text x="50%" y="${
+              65 + spacing * 10
+            }%" text-anchor="middle" class="desc-text">${descText}</text>
+          </svg>
+        `;
+
+        const blob = new Blob([svgContent], { type: "image/svg+xml" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `logo-${index}.svg`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+
+      function getLogoFont(index) {
+        const fonts = {
+          1: "Oswald",
+          2: "Bangers",
+          3: "Lobster",
+          4: "Cinzel",
+          5: "Muli",
+          6: "Playfair+Display",
+          7: "Montserrat",
+          8: "Dancing+Script",
+          9: "Abril+Fatface",
+        };
+        return fonts[index];
+      }
+
+      function getLogoStyle(index) {
+        const styles = {
+          1: "font-family: Oswald; font-weight: 300; font-size: 32px;",
+          2: "font-family: Bangers; letter-spacing: 2px; font-size: 32px;",
+          3: "font-family: Lobster; font-size: 32px;",
+          4: "font-family: Cinzel; font-size: 32px;",
+          5: "font-family: Muli; font-weight: 800; font-size: 32px;",
+          6: 'font-family: "Playfair Display"; font-weight: 700; font-style: italic; font-size: 32px;',
+          7: "font-family: Montserrat; font-weight: 800; letter-spacing: -1px; font-size: 32px;",
+          8: 'font-family: "Dancing Script"; font-size: 40px;',
+          9: 'font-family: "Abril Fatface"; letter-spacing: 1px; font-size: 32px;',
+        };
+        return styles[index];
+      }
+    </script>
+  </body>
+  <footer
+    style="
+      background-color: hsl(var(--card));
+      color: hsl(var(--card-foreground));
+      padding: 2.5rem;
+      text-align: center;
+      margin: 4rem 1.5rem 1.5rem 1.5rem;
+      border-radius: var(--radius);
+      border: 1px solid hsl(var(--border));
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      width: 100%;
+    "
+  >
+    <div>
+      <svg
+        width="40"
+        height="40"
+        viewBox="0 0 60 60"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        style="margin-bottom: 1rem"
+      >
+        <rect width="60" height="60" rx="8" fill="hsl(var(--primary))" />
+        <path
+          d="M15 20h30M15 30h30M15 40h30"
+          stroke="hsl(var(--primary-foreground))"
+          stroke-width="4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <circle
+          cx="30"
+          cy="30"
+          r="15"
+          stroke="hsl(var(--primary-foreground))"
+          stroke-width="4"
+          fill="none"
+        />
+        <path
+          d="M25 25l10 10M35 25l-10 10"
+          stroke="hsl(var(--primary-foreground))"
+          stroke-width="4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+      <p
+        style="
+          font-weight: 500;
+          margin: 0.5rem 0;
+          color: hsl(var(--foreground));
+        "
+      >
+        Created by
+        <a
+          href="https://www.manuelalferez.com/"
+          target="_blank"
+          style="
+            color: hsl(var(--foreground));
+            text-decoration: underline;
+            transition: opacity 0.2s;
+          "
+          onmouseover="this.style.opacity='0.7'"
+          onmouseout="this.style.opacity='1'"
+        >
+          Manuel Alférez
+        </a>
+      </p>
+      <p style="margin: 0.5rem 0; color: hsl(var(--muted-foreground))">
+        Copyright © 2024 - All rights reserved
+      </p>
+    </div>
+    <div style="margin-top: 1.5rem">
+      <a
+        href="https://twitter.com/manuelalferez"
+        target="_blank"
+        style="color: hsl(var(--muted-foreground)); transition: color 0.2s"
+        onmouseover="this.style.color='hsl(var(--foreground))'"
+        onmouseout="this.style.color='hsl(var(--muted-foreground))'"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <path
+            d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"
+          ></path>
+        </svg>
+      </a>
+    </div>
+  </footer>
+</html>
